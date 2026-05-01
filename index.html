@@ -21,13 +21,12 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            position: fixed; /* מונע גלילת משיכה במובייל */
+            position: fixed; 
             width: 100%;
         }
 
         body {
             font-family: 'Varela Round', 'Assistant', sans-serif;
-            /* החזרת הרקע הכללי ללבן */
             background-color: #ffffff;
             display: flex;
             flex-direction: column;
@@ -86,18 +85,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* ממרכז את התוכן במובייל */
-            gap: 0.5rem; /* צמצום המרווח בין התמונה לטקסט */
+            justify-content: center; 
+            gap: 0.5rem; 
             width: 100%;
             height: 100%;
         }
 
         .text-content {
-            font-size: clamp(1.3rem, 5vw, 1.7rem); 
-            line-height: 1.2;
+            font-size: clamp(1.2rem, 4.5vw, 1.6rem); 
+            line-height: 1.3;
             color: #1e293b;
             font-weight: 700;
-            margin-top: 10px; /* קירוב לטקסט */
+            margin-top: 10px;
         }
 
         .highlight {
@@ -238,10 +237,10 @@
 
         @media (max-width: 480px) {
             .page-content {
-                justify-content: center; /* ממרכז תמונה וטקסט קרוב אחד לשני */
+                justify-content: center; 
             }
             .text-content {
-                margin-top: 15px; /* מרווח קטן וקבוע מהתמונה */
+                margin-top: 15px; 
             }
             .book-container {
                 height: 60vh;
@@ -277,16 +276,20 @@
 
         const pagesData = [
             { text: "מאי-לי יושבת בסיר", image: coverImg, isCover: true },
-            { text: "קוראים לי מאי-לי ואני ילדה <span class='highlight'>גדולה</span>", icon: "👧" },
-            { text: "אוכלת <span class='highlight'>לבד</span>", icon: "🥣" },
-            { text: "מרכיבה פאזל", icon: "🧩" },
-            { text: "ולומדת לעשות פיפי וקקי ב<span class='highlight'>סיר</span>!", icon: "✨" },
-            { text: "אומרת <span class='highlight'>ביי ביי</span> לחיתול ולובשת תחתונים", icon: "🩲" },
-            { text: "כשלוחץ לי בבטן אני יושבת בסיר", icon: "💡" },
-            { text: "אני יושבת ומחכה, לפעמים קוראת ספר", icon: "📚" },
-            { text: "לפעמים יוצא <span class='highlight'>פיפי</span> או <span class='highlight'>קקי</span> בסיר", icon: "⭐" },
-            { text: "אני שוטפת ידיים עם מים וסבון", icon: "🧼" },
-            { text: "כיף להיות ילדה <span class='highlight'>גדולה</span>", icon: "💖", isLast: true }
+            { text: "הי, קוראים לי מאי-לי ואני ילדה <span class='highlight'>גדולה</span>!", icon: "👧" },
+            { text: "אני כבר עושה המון דברים <span class='highlight'>לבד</span>...", icon: "✨" },
+            { text: "אני אוכלת לבד עם כפית ומזלג", icon: "🥣" },
+            { text: "אני מציירת ציורים ומרכיבה פאזל", icon: "🧩" },
+            { text: "אני אפילו נועלת נעליים בעצמי!", icon: "👟" },
+            { text: "עכשיו אני לומדת לעשות משהו חדש... <br>לעשות פיפי וקקי ב<span class='highlight'>סיר</span>!", icon: "🚽" },
+            { text: "אמרתי <span class='highlight'>'ביי ביי'</span> לחיתול, <br>ועכשיו אני לובשת תחתונים יפים.", icon: "🩲" },
+            { text: "לפעמים, כשאני מרגישה שלוחץ לי בבטן...", icon: "💭" },
+            { text: "אני רצה מהר לסיר ויושבת עליו.", icon: "🏃‍♀️" },
+            { text: "אני יושבת בסבלנות, <br>לפעמים אני אפילו קוראת ספר בזמן שאני מחכה.", icon: "📚" },
+            { text: "ופתאום... <span class='highlight'>צליל מוכר!</span> <br>הפיפי או הקקי נכנסו ישר לתוך הסיר!", icon: "🎵" },
+            { text: "אמא ואבא כל כך שמחים, <br>וגם אני מרגישה גאה!", icon: "💖" },
+            { text: "אחרי שסיימתי, אני שוטפת ידיים היטב <br>עם מים וסבון.", icon: "🧼" },
+            { text: "איזה כיף להיות ילדה גדולה!", icon: "🌟", isLast: true }
         ];
 
         const book = document.getElementById('book');
@@ -375,7 +378,6 @@
             if (touchEndX - touchStartX > 50) goPrev(); 
         }, {passive: false});
 
-        // מניעת גלילה בנגיעה
         document.addEventListener('touchmove', function(e) {
             e.preventDefault();
         }, { passive: false });
