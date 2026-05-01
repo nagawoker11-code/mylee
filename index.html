@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>מאי-לי יושבת בסיר</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -18,15 +18,17 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            touch-action: none;
+            padding: 10px;
+            touch-action: none; /* מונע גלילה וזום בטעות בטאץ' */
         }
 
+        /* מכולת הספר - גמישה למובייל */
         .book-container {
             perspective: 2000px;
-            width: 90vw;
+            width: 95vw;
             max-width: 420px;
-            height: 70vh;
-            max-height: 650px;
+            height: 65vh; /* גובה מותאם למובייל כדי להשאיר מקום לכפתורים */
+            max-height: 600px;
             position: relative;
         }
 
@@ -50,13 +52,13 @@
             user-select: none;
             background: white;
             background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-            border-radius: 16px 4px 4px 16px;
-            box-shadow: -10px 10px 30px rgba(0,0,0,0.08);
+            border-radius: 12px 4px 4px 12px;
+            box-shadow: -5px 5px 20px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
             backface-visibility: hidden;
             border: 1px solid #f1f5f9;
@@ -71,35 +73,36 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            gap: 1.5rem;
+            gap: 1rem;
             width: 100%;
-            height: 90%;
+            height: 100%;
         }
 
         .text-content {
-            font-size: 1.8rem;
+            font-size: clamp(1.4rem, 5vw, 1.8rem); /* טקסט גמיש */
             line-height: 1.3;
             color: #1e293b;
             font-weight: 700;
             margin-top: auto;
-            padding-bottom: 10px;
+            padding-bottom: 5px;
         }
 
         .highlight {
-            color: #8b5cf6; /* סגול תואם לאפקט ה-LED */
+            color: #8b5cf6;
             display: inline-block;
         }
 
+        /* מכולת התמונה - מותאמת למובייל */
         .illustration-container {
-            width: 280px;
-            height: 280px;
+            width: clamp(200px, 60vw, 280px);
+            height: clamp(200px, 60vw, 280px);
             background-color: #ffffff;
-            border-radius: 32px; 
+            border-radius: 24px; 
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.04);
-            border: 6px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            border: 4px solid white;
             margin-bottom: auto;
             overflow: hidden; 
             position: relative;
@@ -113,7 +116,7 @@
         }
 
         .fallback-icon {
-            font-size: 8rem;
+            font-size: clamp(4rem, 15vw, 7rem);
             display: none;
         }
 
@@ -132,22 +135,81 @@
 
         .cover .text-content {
             color: white;
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 8vw, 2.5rem);
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .cover .illustration-container {
+        /* כפתורי ניווט מותאמים למובייל */
+        .controls {
+            width: 100%;
+            max-width: 420px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
             background: #ffffff;
-            border: 4px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 15px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+        }
+
+        .nav-btn.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .page-counter {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #cbd5e1;
+            margin: 0 3px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #8b5cf6;
+            width: 14px;
+            border-radius: 4px;
         }
 
         .restart-btn {
             background: #7c3aed;
             color: white;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 9999px;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1rem;
             border: 2px solid white;
             opacity: 0;
             visibility: hidden;
@@ -160,136 +222,39 @@
             visibility: visible;
         }
 
-        /* עיצוב כפתורי ניווט מודרני עם אפקט LED סגול */
-        .controls {
-            width: 100%;
-            max-width: 480px;
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            z-index: 1000;
-        }
-
-        .nav-btn {
-            background: #ffffff;
-            padding: 12px 24px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            border: 1px solid #e2e8f0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            outline: none;
-            color: #475569;
-            font-weight: 700;
-            /* אפקט LED עדין מאוד בסגול */
-            box-shadow: 0 0 0px rgba(139, 92, 246, 0), 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .nav-btn::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 18px;
-            padding: 2px;
-            background: linear-gradient(45deg, #ddd6fe, #c4b5fd, #ddd6fe);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0.5;
-            transition: opacity 0.3s;
-        }
-
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            color: #7c3aed;
-            border-color: #c4b5fd;
-            /* חיזוק אפקט ה-LED בריחוף */
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.2), 0 6px 15px rgba(0,0,0,0.08);
-        }
-
-        .nav-btn:hover::before {
-            opacity: 1;
-        }
-
-        .nav-btn:active {
-            transform: translateY(1px) scale(0.97);
-        }
-
-        .nav-btn.disabled {
-            opacity: 0.3;
-            pointer-events: none;
-            filter: grayscale(1);
-        }
-
-        .nav-btn .icon {
-            font-size: 1.2rem;
-            transition: transform 0.3s ease;
-        }
-        
-        .nav-btn:hover .icon-right { transform: translateX(3px); }
-        .nav-btn:hover .icon-left { transform: translateX(-3px); }
-
-        .page-counter {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px 18px;
-            border-radius: 20px;
-            border: 1px solid #f1f5f9;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #cbd5e1;
-            margin: 0 4px;
-            transition: all 0.3s ease;
-        }
-
-        .dot.active {
-            background: #8b5cf6;
-            width: 18px;
-            border-radius: 4px;
+        /* תיקון ספציפי למסכים קטנים מאוד */
+        @media (max-height: 600px) {
+            .book-container { height: 55vh; }
+            .illustration-container { width: 180px; height: 180px; }
+            .text-content { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <audio id="pageFlipSound" preload="auto">
-        <source src="https://www.soundjay.com/misc/sounds/page-flip-01a.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="pageFlipSound" preload="auto"></audio>
 
     <div class="book-container">
         <div class="book" id="book"></div>
     </div>
 
     <div class="controls">
-        <!-- כפתור אחורה עם טקסט ואפקט לד -->
         <button class="nav-btn" id="prevBtn">
-            <span class="icon icon-right">👉</span>
+            <span class="icon">👉</span>
             <span>אחורה</span>
         </button>
 
         <div class="page-counter" id="dotCounter"></div>
 
-        <!-- כפתור קדימה עם טקסט ואפקט לד -->
         <button class="nav-btn" id="nextBtn">
             <span>קדימה</span>
-            <span class="icon icon-left">👈</span>
+            <span class="icon">👈</span>
         </button>
     </div>
 
     <script>
         const coverImg = "https://github.com/user-attachments/assets/c8e79c2e-2d28-4301-9dfd-643bf8c9730a";
+        const flipSoundUrl = "https://www.soundjay.com/misc/sounds/page-flip-01a.mp3";
 
         const pagesData = [
             { text: "מאי-לי יושבת בסיר", image: coverImg, isCover: true },
@@ -311,6 +276,8 @@
         const nextBtn = document.getElementById('nextBtn');
         const prevBtn = document.getElementById('prevBtn');
         let currentPage = 0;
+
+        pageFlipSound.src = flipSoundUrl;
 
         function handleImageError(img) {
             img.closest('.illustration-container').classList.add('show-fallback');
@@ -379,6 +346,15 @@
                 currentPage = 0;
                 updateUI();
             }
+        });
+
+        // תמיכה ב-Swipe למובייל
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) goNext(); // Swipe Left
+            if (touchEndX - touchStartX > 50) goPrev(); // Swipe Right
         });
     </script>
 </body>
