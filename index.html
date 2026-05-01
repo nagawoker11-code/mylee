@@ -10,7 +10,7 @@
         
         body {
             font-family: 'Varela Round', 'Assistant', sans-serif;
-            background-color: #e2e8f0; 
+            background-color: #f8fafc; 
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -25,8 +25,8 @@
             perspective: 2000px;
             width: 90vw;
             max-width: 420px;
-            height: 75vh;
-            max-height: 700px;
+            height: 70vh;
+            max-height: 650px;
             position: relative;
         }
 
@@ -51,7 +51,7 @@
             background: white;
             background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
             border-radius: 16px 4px 4px 16px;
-            box-shadow: -10px 10px 30px rgba(0,0,0,0.15);
+            box-shadow: -10px 10px 30px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -59,7 +59,7 @@
             padding: 30px;
             text-align: center;
             backface-visibility: hidden;
-            border: 1px solid #d1d5db;
+            border: 1px solid #f1f5f9;
         }
 
         .page.flipped {
@@ -77,8 +77,8 @@
         }
 
         .text-content {
-            font-size: 1.9rem;
-            line-height: 1.35;
+            font-size: 1.8rem;
+            line-height: 1.3;
             color: #1e293b;
             font-weight: 700;
             margin-top: auto;
@@ -86,20 +86,19 @@
         }
 
         .highlight {
-            color: #2563eb;
+            color: #8b5cf6; /* סגול תואם לאפקט ה-LED */
             display: inline-block;
         }
 
-        /* מסגרת מרובעת עם פינות מעוגלות - מותאם למילוי מלא */
         .illustration-container {
-            width: 280px; /* גודל מותאם אישית */
+            width: 280px;
             height: 280px;
             background-color: #ffffff;
             border-radius: 32px; 
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.04);
             border: 6px solid white;
             margin-bottom: auto;
             overflow: hidden; 
@@ -109,8 +108,6 @@
         .illustration-container img {
             width: 100%;
             height: 100%;
-            /* 'cover' מבטיח שהתמונה תמלא את כל הריבוע ללא רווחים, 
-               מכיוון שהמקור ריבועי והיעד ריבועי - לא תהיה מתיחה או חיתוך משמעותי */
             object-fit: cover; 
             display: block;
         }
@@ -128,33 +125,34 @@
         }
 
         .cover {
-            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
             border: none;
             z-index: 100;
         }
 
         .cover .text-content {
             color: white;
-            font-size: 2.6rem;
-            text-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .cover .illustration-container {
-            background: #ffffff; /* רקע לבן נקי לתמונה */
-            border: 4px solid rgba(255, 255, 255, 0.5);
+            background: #ffffff;
+            border: 4px solid rgba(255, 255, 255, 0.3);
         }
 
         .restart-btn {
-            background: #2563eb;
+            background: #7c3aed;
             color: white;
-            padding: 14px 28px;
-            border-radius: 40px;
+            padding: 12px 24px;
+            border-radius: 9999px;
             font-weight: bold;
-            font-size: 1.3rem;
-            border: 3px solid white;
+            font-size: 1.2rem;
+            border: 2px solid white;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
         }
 
         .restart-btn.show {
@@ -162,46 +160,105 @@
             visibility: visible;
         }
 
+        /* עיצוב כפתורי ניווט מודרני עם אפקט LED סגול */
         .controls {
             width: 100%;
             max-width: 480px;
-            margin-top: 25px;
+            margin-top: 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 15px;
+            padding: 0 20px;
             z-index: 1000;
         }
 
         .nav-btn {
             background: #ffffff;
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 16px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            gap: 10px;
             cursor: pointer;
+            border: 1px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            outline: none;
+            color: #475569;
+            font-weight: 700;
+            /* אפקט LED עדין מאוד בסגול */
+            box-shadow: 0 0 0px rgba(139, 92, 246, 0), 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            padding: 2px;
+            background: linear-gradient(45deg, #ddd6fe, #c4b5fd, #ddd6fe);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            color: #7c3aed;
+            border-color: #c4b5fd;
+            /* חיזוק אפקט ה-LED בריחוף */
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.2), 0 6px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-btn:hover::before {
+            opacity: 1;
+        }
+
+        .nav-btn:active {
+            transform: translateY(1px) scale(0.97);
         }
 
         .nav-btn.disabled {
             opacity: 0.3;
             pointer-events: none;
+            filter: grayscale(1);
+        }
+
+        .nav-btn .icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-btn:hover .icon-right { transform: translateX(3px); }
+        .nav-btn:hover .icon-left { transform: translateX(-3px); }
+
+        .page-counter {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
         .dot {
-            width: 10px;
-            height: 10px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: #cbd5e1;
-            margin: 0 2px;
+            margin: 0 4px;
+            transition: all 0.3s ease;
         }
 
         .dot.active {
-            background: #2563eb;
-            transform: scale(1.3);
+            background: #8b5cf6;
+            width: 18px;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -216,14 +273,18 @@
     </div>
 
     <div class="controls">
+        <!-- כפתור אחורה עם טקסט ואפקט לד -->
         <button class="nav-btn" id="prevBtn">
-            <span style="font-size: 1.8rem;">➡️</span>
-            <span style="font-size: 0.8rem; font-weight: 800;">אחורה</span>
+            <span class="icon icon-right">👉</span>
+            <span>אחורה</span>
         </button>
-        <div style="display: flex;" id="dotCounter"></div>
+
+        <div class="page-counter" id="dotCounter"></div>
+
+        <!-- כפתור קדימה עם טקסט ואפקט לד -->
         <button class="nav-btn" id="nextBtn">
-            <span style="font-size: 1.8rem;">⬅️</span>
-            <span style="font-size: 0.8rem; font-weight: 800;">קדימה</span>
+            <span>קדימה</span>
+            <span class="icon icon-left">👈</span>
         </button>
     </div>
 
@@ -283,7 +344,9 @@
         const dots = document.querySelectorAll('.dot');
 
         function updateUI() {
-            dots.forEach((dot, i) => dot.classList.toggle('active', i === currentPage));
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentPage);
+            });
             prevBtn.classList.toggle('disabled', currentPage === 0);
             nextBtn.classList.toggle('disabled', currentPage === pagesData.length - 1);
             const restartBtn = document.getElementById('restartBtn');
