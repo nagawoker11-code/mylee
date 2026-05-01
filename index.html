@@ -248,6 +248,11 @@
             .book-container { max-width: 550px; height: 60vh; }
             .illustration-container { width: 300px; height: 300px; }
         }
+
+        /* מצב "הקראה פעילה" - מנע לחיצות על כפתורים */
+        .speaking .nav-btn, .speaking .page {
+            cursor: wait !important;
+        }
     </style>
 </head>
 <body>
@@ -297,8 +302,44 @@
         const nextBtn = document.getElementById('nextBtn');
         const prevBtn = document.getElementById('prevBtn');
         let currentPage = 0;
+        let isSpeaking = false;
+        let speakTimeout = null;
 
         pageFlipSound.src = flipSoundUrl;
+
+        // פונקציית הקראה (Speech Synthesis)
+        function speakText(text) {
+            // ביטול הקראות קודמות וטיימאאוטים קודמים
+            window.speechSynthesis.cancel();
+            if(speakTimeout) clearTimeout(speakTimeout);
+            
+            // הוספת השהיה של 800 מילי-שניות (כמעט שנייה) לפני התחלת ההקראה
+            speakTimeout = setTimeout(() => {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'he-IL'; // עברית
+                utterance.rate = 0.9;     // קצב מעט איטי יותר לילדים
+
+                utterance.onstart = () => {
+                    isSpeaking = true;
+                    document.body.classList.add('speaking');
+                    updateUI();
+                };
+
+                utterance.onend = () => {
+                    isSpeaking = false;
+                    document.body.classList.remove('speaking');
+                    updateUI();
+                };
+
+                utterance.onerror = () => {
+                    isSpeaking = false;
+                    document.body.classList.remove('speaking');
+                    updateUI();
+                };
+
+                window.speechSynthesis.speak(utterance);
+            }, 800);
+        }
 
         function handleImageError(img) {
             img.closest('.illustration-container').classList.add('show-fallback');
@@ -324,8 +365,10 @@
                 </div>
             `;
             pageDiv.innerHTML = content;
-            // לחיצה על הדף עצמו עוברת קדימה
-            pageDiv.onclick = () => { if(index === currentPage) goNext(); };
+            
+            pageDiv.onclick = () => { 
+                if(index === currentPage && !isSpeaking) goNext(); 
+            };
             book.appendChild(pageDiv);
         });
 
@@ -336,27 +379,56 @@
             dots.forEach((dot, i) => {
                 dot.classList.toggle('active', i === currentPage);
             });
-            prevBtn.classList.toggle('disabled', currentPage === 0);
-            nextBtn.classList.toggle('disabled', currentPage === pagesData.length - 1);
+
+            // חסימת כפתורים בזמן הקראה
+            const shouldDisableNext = currentPage === pagesData.length - 1 || isSpeaking;
+            const shouldDisablePrev = currentPage === 0 || isSpeaking;
+
+            prevBtn.classList.toggle('disabled', shouldDisablePrev);
+            nextBtn.classList.toggle('disabled', shouldDisableNext);
+            
             const restartBtn = document.getElementById('restartBtn');
-            if(restartBtn) restartBtn.classList.toggle('show', currentPage === pagesData.length - 1);
+            if(restartBtn) restartBtn.classList.toggle('show', currentPage === pagesData.length - 1 && !isSpeaking);
         }
 
         function goNext() {
-            if (currentPage < pagesData.length - 1) {
+            if (currentPage < pagesData.length - 1 && !isSpeaking) {
                 pageFlipSound.currentTime = 0;
                 pageFlipSound.play().catch(() => {});
                 pageElements[currentPage].classList.add('flipped');
-                currentPage++;
+                
+                // סימון מצב "דיבור" כבר עכשיו כדי לחסום לחיצות נוספות בזמן ההשהיה
+                isSpeaking = true;
                 updateUI();
+                
+                currentPage++;
+                
+                // התחלת הקראה רק אם זה לא דף הכריכה
+                if (currentPage > 0) {
+                    speakText(pagesData[currentPage].text);
+                } else {
+                    isSpeaking = false;
+                    updateUI();
+                }
             }
         }
 
         function goPrev() {
-            if (currentPage > 0) {
+            if (currentPage > 0 && !isSpeaking) {
+                window.speechSynthesis.cancel();
+                if(speakTimeout) clearTimeout(speakTimeout);
+                isSpeaking = false;
+                
                 currentPage--;
                 pageElements[currentPage].classList.remove('flipped');
-                updateUI();
+                
+                if (currentPage > 0) {
+                    isSpeaking = true;
+                    updateUI();
+                    speakText(pagesData[currentPage].text);
+                } else {
+                    updateUI();
+                }
             }
         }
 
@@ -364,23 +436,27 @@
         prevBtn.onclick = (e) => { e.stopPropagation(); goPrev(); };
         
         document.addEventListener('click', e => {
-            if(e.target.id === 'restartBtn') {
+            if(e.target.id === 'restartBtn' && !isSpeaking) {
+                window.speechSynthesis.cancel();
+                if(speakTimeout) clearTimeout(speakTimeout);
                 pageElements.forEach(p => p.classList.remove('flipped'));
                 currentPage = 0;
+                isSpeaking = false;
                 updateUI();
             }
         });
 
-        // ניווט במחוות מגע (Swipe)
+        // ניווט במחוות מגע (Swipe) - חסום בזמן הקראה
         let touchStartX = 0;
         document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, {passive: true});
         document.addEventListener('touchend', e => {
+            if (isSpeaking) return;
             let touchEndX = e.changedTouches[0].screenX;
             if (touchStartX - touchEndX > 50) goNext(); 
             if (touchEndX - touchStartX > 50) goPrev(); 
         }, {passive: true});
 
-        // מניעת גלילה בנגיעה כדי לשמור על חוויית אפליקציה
+        // מניעת גלילה בנגיעה
         document.addEventListener('touchmove', function(e) {
             e.preventDefault();
         }, { passive: false });
