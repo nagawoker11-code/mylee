@@ -15,7 +15,7 @@
             --led-purple: #8b5cf6;
         }
 
-        /* ביטול אפשרות גלילה בכל האפליקציה */
+        /* ביטול אפשרות גלילה ומניעת מתיחה */
         html, body {
             overflow: hidden;
             height: 100%;
@@ -23,6 +23,7 @@
             padding: 0;
             position: fixed; 
             width: 100%;
+            -webkit-overflow-scrolling: touch;
         }
 
         body {
@@ -32,17 +33,18 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px;
+            padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom) 10px;
             touch-action: none;
         }
 
         .book-container {
             perspective: 2000px;
             width: 95vw;
-            max-width: 420px;
-            height: 70vh; 
-            max-height: 600px;
+            max-width: 450px;
+            height: 75vh; 
+            max-height: 650px;
             position: relative;
+            z-index: 10;
         }
 
         .book {
@@ -66,12 +68,12 @@
             background: white;
             background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
             border-radius: 12px 4px 4px 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 24px;
             text-align: center;
             backface-visibility: hidden;
             border: 1px solid #f1f5f9;
@@ -86,34 +88,33 @@
             flex-direction: column;
             align-items: center;
             justify-content: center; 
-            gap: 0.5rem; 
+            gap: 12px; 
             width: 100%;
             height: 100%;
         }
 
         .text-content {
-            font-size: clamp(1.2rem, 4.5vw, 1.6rem); 
-            line-height: 1.3;
+            font-size: clamp(1.15rem, 4.2vw, 1.6rem); 
+            line-height: 1.4;
             color: #1e293b;
             font-weight: 700;
-            margin-top: 10px;
+            max-width: 90%;
         }
 
         .highlight {
             color: var(--led-purple);
-            display: inline-block;
         }
 
         .illustration-container {
-            width: clamp(180px, 55vw, 260px);
-            height: clamp(180px, 55vw, 260px);
+            width: clamp(160px, 50vw, 280px);
+            height: clamp(160px, 50vw, 280px);
             background-color: #ffffff;
             border-radius: 20px; 
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 3px solid white;
+            border: 4px solid white;
             overflow: hidden; 
             position: relative;
         }
@@ -126,7 +127,7 @@
         }
 
         .fallback-icon {
-            font-size: clamp(4rem, 15vw, 6rem);
+            font-size: clamp(3.5rem, 12vw, 6rem);
             display: none;
         }
 
@@ -146,15 +147,15 @@
 
         .cover .text-content {
             color: white;
-            font-size: clamp(1.8rem, 8vw, 2.3rem);
+            font-size: clamp(1.8rem, 7vw, 2.4rem);
             text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         .controls {
             width: 100%;
-            max-width: 420px;
-            margin-top: 15px;
+            max-width: 450px;
+            margin-top: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -164,18 +165,18 @@
 
         .nav-btn {
             background: #f8fafc;
-            padding: 8px 16px;
-            border-radius: 12px;
+            padding: 10px 18px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             cursor: pointer;
             border: 1px solid #e2e8f0;
             transition: all 0.2s ease;
             color: #475569;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             -webkit-tap-highlight-color: transparent;
         }
@@ -195,39 +196,39 @@
             display: flex;
             align-items: center;
             background: #f1f5f9;
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 8px 14px;
+            border-radius: 24px;
             border: 1px solid #e2e8f0;
         }
 
         .dot {
-            width: 5px;
-            height: 5px;
+            width: 6px;
+            height: 6px;
             background: #cbd5e1;
-            margin: 0 3px;
+            margin: 0 3.5px;
             border-radius: 50%;
             transition: all 0.3s ease;
         }
 
         .dot.active {
             background: var(--led-purple);
-            width: 12px;
-            border-radius: 4px;
+            width: 14px;
+            border-radius: 5px;
         }
 
         .restart-btn {
             background: var(--led-purple);
             color: white;
-            padding: 8px 18px;
+            padding: 10px 20px;
             border-radius: 9999px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 1rem;
             border: 2px solid white;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
             box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         .restart-btn.show {
@@ -235,16 +236,17 @@
             visibility: visible;
         }
 
-        @media (max-width: 480px) {
-            .page-content {
-                justify-content: center; 
-            }
-            .text-content {
-                margin-top: 15px; 
-            }
-            .book-container {
-                height: 60vh;
-            }
+        /* התאמות מיוחדות למכשירים מתקפלים (Fold) */
+        @media (max-width: 320px) { /* פולד סגור או מסך קטן מאוד */
+            .book-container { height: 65vh; }
+            .illustration-container { width: 150px; height: 150px; }
+            .text-content { font-size: 1rem; }
+            .nav-btn { padding: 8px 12px; font-size: 0.85rem; }
+        }
+
+        @media (min-width: 600px) and (max-height: 900px) { /* פולד פתוח / טאבלט קטן */
+            .book-container { max-width: 550px; height: 60vh; }
+            .illustration-container { width: 300px; height: 300px; }
         }
     </style>
 </head>
@@ -274,22 +276,19 @@
         const coverImg = "https://github.com/user-attachments/assets/c8e79c2e-2d28-4301-9dfd-643bf8c9730a";
         const flipSoundUrl = "https://www.soundjay.com/misc/sounds/page-flip-01a.mp3";
 
+        // רשימת דפים מדויקת לפי הבקשה
         const pagesData = [
             { text: "מאי-לי יושבת בסיר", image: coverImg, isCover: true },
-            { text: "הי, קוראים לי מאי-לי ואני ילדה <span class='highlight'>גדולה</span>!", icon: "👧" },
-            { text: "אני כבר עושה המון דברים <span class='highlight'>לבד</span>...", icon: "✨" },
-            { text: "אני אוכלת לבד עם כפית ומזלג", icon: "🥣" },
-            { text: "אני מציירת ציורים ומרכיבה פאזל", icon: "🧩" },
-            { text: "אני אפילו נועלת נעליים בעצמי!", icon: "👟" },
-            { text: "עכשיו אני לומדת לעשות משהו חדש... <br>לעשות פיפי וקקי ב<span class='highlight'>סיר</span>!", icon: "🚽" },
-            { text: "אמרתי <span class='highlight'>'ביי ביי'</span> לחיתול, <br>ועכשיו אני לובשת תחתונים יפים.", icon: "🩲" },
-            { text: "לפעמים, כשאני מרגישה שלוחץ לי בבטן...", icon: "💭" },
-            { text: "אני רצה מהר לסיר ויושבת עליו.", icon: "🏃‍♀️" },
-            { text: "אני יושבת בסבלנות, <br>לפעמים אני אפילו קוראת ספר בזמן שאני מחכה.", icon: "📚" },
-            { text: "ופתאום... <span class='highlight'>צליל מוכר!</span> <br>הפיפי או הקקי נכנסו ישר לתוך הסיר!", icon: "🎵" },
-            { text: "אמא ואבא כל כך שמחים, <br>וגם אני מרגישה גאה!", icon: "💖" },
-            { text: "אחרי שסיימתי, אני שוטפת ידיים היטב <br>עם מים וסבון.", icon: "🧼" },
-            { text: "איזה כיף להיות ילדה גדולה!", icon: "🌟", isLast: true }
+            { text: "קוראים לי מאי-לי ואני ילדה גדולה שעושה דברים של ילדים גדולים", icon: "👧" },
+            { text: "אוכלת לבד", icon: "🥣" },
+            { text: "מרכיבה פאזל", icon: "🧩" },
+            { text: "ולומדת לעשות פיפי וקקי בסיר כמו ילדה גדולה!", icon: "✨" },
+            { text: "עכשיו אני אומרת ביי ביי לחיתול ולובשת תחתונים", icon: "🩲" },
+            { text: "כשלוחץ לי בבטן ואני מרגישה שאני צריכה לעשות פיפי או קקי אני יושבת בסיר", icon: "💡" },
+            { text: "אני יושבת בסיר ומחכה, לפעמים אני קוראת ספר", icon: "📚" },
+            { text: "לפעמים יוצא פיפי או קקי בסיר ולפעמים אין פיפי ואין קקי", icon: "⭐" },
+            { text: "אני שוטפת ידיים עם מים וסבון וחוזרת לשחק", icon: "🧼" },
+            { text: "כיף להיות ילדה גדולה", icon: "💖", isLast: true }
         ];
 
         const book = document.getElementById('book');
@@ -325,6 +324,7 @@
                 </div>
             `;
             pageDiv.innerHTML = content;
+            // לחיצה על הדף עצמו עוברת קדימה
             pageDiv.onclick = () => { if(index === currentPage) goNext(); };
             book.appendChild(pageDiv);
         });
@@ -360,8 +360,9 @@
             }
         }
 
-        nextBtn.onclick = goNext;
-        prevBtn.onclick = goPrev;
+        nextBtn.onclick = (e) => { e.stopPropagation(); goNext(); };
+        prevBtn.onclick = (e) => { e.stopPropagation(); goPrev(); };
+        
         document.addEventListener('click', e => {
             if(e.target.id === 'restartBtn') {
                 pageElements.forEach(p => p.classList.remove('flipped'));
@@ -370,14 +371,16 @@
             }
         });
 
+        // ניווט במחוות מגע (Swipe)
         let touchStartX = 0;
-        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, {passive: true});
         document.addEventListener('touchend', e => {
             let touchEndX = e.changedTouches[0].screenX;
             if (touchStartX - touchEndX > 50) goNext(); 
             if (touchEndX - touchStartX > 50) goPrev(); 
-        }, {passive: false});
+        }, {passive: true});
 
+        // מניעת גלילה בנגיעה כדי לשמור על חוויית אפליקציה
         document.addEventListener('touchmove', function(e) {
             e.preventDefault();
         }, { passive: false });
