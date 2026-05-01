@@ -66,17 +66,6 @@
             transform: rotateY(180deg);
         }
 
-        .page::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 15px;
-            height: 100%;
-            background: linear-gradient(to left, rgba(0,0,0,0.05), transparent);
-            pointer-events: none;
-        }
-
         .page-content {
             display: flex;
             flex-direction: column;
@@ -99,30 +88,43 @@
         .highlight {
             color: #2563eb;
             display: inline-block;
-            transition: transform 0.3s;
-        }
-        
-        .highlight:active {
-            transform: scale(1.2);
         }
 
+        /* מסגרת מרובעת עם פינות מעוגלות - מותאם למילוי מלא */
         .illustration-container {
-            width: 230px;
-            height: 230px;
-            background-color: #f0f9ff;
-            border-radius: 50%;
+            width: 280px; /* גודל מותאם אישית */
+            height: 280px;
+            background-color: #ffffff;
+            border-radius: 32px; 
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 8rem;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             border: 6px solid white;
             margin-bottom: auto;
-            transition: transform 0.5s ease;
+            overflow: hidden; 
+            position: relative;
         }
 
-        .illustration-container:active {
-            transform: scale(1.1) rotate(5deg);
+        .illustration-container img {
+            width: 100%;
+            height: 100%;
+            /* 'cover' מבטיח שהתמונה תמלא את כל הריבוע ללא רווחים, 
+               מכיוון שהמקור ריבועי והיעד ריבועי - לא תהיה מתיחה או חיתוך משמעותי */
+            object-fit: cover; 
+            display: block;
+        }
+
+        .fallback-icon {
+            font-size: 8rem;
+            display: none;
+        }
+
+        .show-fallback .fallback-icon {
+            display: block;
+        }
+        .show-fallback img {
+            display: none;
         }
 
         .cover {
@@ -138,13 +140,11 @@
         }
 
         .cover .illustration-container {
-            background: rgba(255, 255, 255, 0.25);
-            border: 4px solid rgba(255, 255, 255, 0.4);
+            background: #ffffff; /* רקע לבן נקי לתמונה */
+            border: 4px solid rgba(255, 255, 255, 0.5);
         }
 
-        /* Updated Restart Button Styles: Hidden by default */
         .restart-btn {
-            margin-top: 15px;
             background: #2563eb;
             color: white;
             padding: 14px 28px;
@@ -152,25 +152,14 @@
             font-weight: bold;
             font-size: 1.3rem;
             border: 3px solid white;
-            box-shadow: 0 8px 15px rgba(37, 99, 235, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(10px);
+            transition: all 0.3s ease;
         }
 
         .restart-btn.show {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
-        }
-
-        .restart-btn:active {
-            transform: scale(0.9);
-            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
         }
 
         .controls {
@@ -194,26 +183,12 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-            color: #1e293b;
-            border: 2px solid #cbd5e1;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .nav-btn:active {
-            transform: scale(0.9);
-            background-color: #f1f5f9;
         }
 
         .nav-btn.disabled {
             opacity: 0.3;
-            filter: grayscale(1);
             pointer-events: none;
-        }
-
-        .page-counter {
-            display: flex;
-            gap: 4px;
         }
 
         .dot {
@@ -221,60 +196,52 @@
             height: 10px;
             border-radius: 50%;
             background: #cbd5e1;
-            transition: all 0.3s;
+            margin: 0 2px;
         }
 
         .dot.active {
             background: #2563eb;
             transform: scale(1.3);
         }
-
-        @media (max-width: 400px) {
-            .illustration-container { width: 190px; height: 190px; font-size: 6rem; }
-            .text-content { font-size: 1.6rem; }
-            .nav-btn { width: 70px; height: 70px; }
-        }
     </style>
 </head>
 <body>
 
-    <audio id="pageFlipSound" preload="auto" crossorigin="anonymous">
+    <audio id="pageFlipSound" preload="auto">
         <source src="https://www.soundjay.com/misc/sounds/page-flip-01a.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="book-container" id="container">
-        <div class="book" id="book">
-            <!-- Pages will be generated here -->
-        </div>
+    <div class="book-container">
+        <div class="book" id="book"></div>
     </div>
 
     <div class="controls">
         <button class="nav-btn" id="prevBtn">
-            <span class="icon" style="font-size: 1.8rem;">➡️</span>
-            <span class="label" style="font-size: 0.8rem; font-weight: 800;">אחורה</span>
+            <span style="font-size: 1.8rem;">➡️</span>
+            <span style="font-size: 0.8rem; font-weight: 800;">אחורה</span>
         </button>
-
-        <div class="page-counter" id="dotCounter"></div>
-
+        <div style="display: flex;" id="dotCounter"></div>
         <button class="nav-btn" id="nextBtn">
-            <span class="icon" style="font-size: 1.8rem;">⬅️</span>
-            <span class="label" style="font-size: 0.8rem; font-weight: 800;">קדימה</span>
+            <span style="font-size: 1.8rem;">⬅️</span>
+            <span style="font-size: 0.8rem; font-weight: 800;">קדימה</span>
         </button>
     </div>
 
     <script>
+        const coverImg = "https://github.com/user-attachments/assets/c8e79c2e-2d28-4301-9dfd-643bf8c9730a";
+
         const pagesData = [
-            { text: "מאי-לי יושבת בסיר", icon: "👑", isCover: true, bgColor: "#eff6ff" },
-            { text: "קוראים לי מאי-לי ואני ילדה <span class='highlight'>גדולה</span>", icon: "👧", bgColor: "#fff" },
-            { text: "אוכלת <span class='highlight'>לבד</span>", icon: "🥣", bgColor: "#fff7ed" },
-            { text: "מרכיבה פאזל", icon: "🧩", bgColor: "#f0fdf4" },
-            { text: "ולומדת לעשות פיפי וקקי ב<span class='highlight'>סיר</span>!", icon: "✨", bgColor: "#fdf2f8" },
-            { text: "אומרת <span class='highlight'>ביי ביי</span> לחיתול ולובשת תחתונים", icon: "🩲", bgColor: "#fff" },
-            { text: "כשלוחץ לי בבטן אני יושבת בסיר", icon: "💡", bgColor: "#fefce8" },
-            { text: "אני יושבת ומחכה, לפעמים קוראת ספר", icon: "📚", bgColor: "#fff" },
-            { text: "לפעמים יוצא <span class='highlight'>פיפי</span> או <span class='highlight'>קקי</span> בסיר", icon: "⭐", bgColor: "#f5f3ff" },
-            { text: "אני שוטפת ידיים עם מים וסבון", icon: "🧼", bgColor: "#ecfeff" },
-            { text: "כיף להיות ילדה <span class='highlight'>גדולה</span>", icon: "💖", bgColor: "#fff", isLast: true }
+            { text: "מאי-לי יושבת בסיר", image: coverImg, isCover: true },
+            { text: "קוראים לי מאי-לי ואני ילדה <span class='highlight'>גדולה</span>", icon: "👧" },
+            { text: "אוכלת <span class='highlight'>לבד</span>", icon: "🥣" },
+            { text: "מרכיבה פאזל", icon: "🧩" },
+            { text: "ולומדת לעשות פיפי וקקי ב<span class='highlight'>סיר</span>!", icon: "✨" },
+            { text: "אומרת <span class='highlight'>ביי ביי</span> לחיתול ולובשת תחתונים", icon: "🩲" },
+            { text: "כשלוחץ לי בבטן אני יושבת בסיר", icon: "💡" },
+            { text: "אני יושבת ומחכה, לפעמים קוראת ספר", icon: "📚" },
+            { text: "לפעמים יוצא <span class='highlight'>פיפי</span> או <span class='highlight'>קקי</span> בסיר", icon: "⭐" },
+            { text: "אני שוטפת ידיים עם מים וסבון", icon: "🧼" },
+            { text: "כיף להיות ילדה <span class='highlight'>גדולה</span>", icon: "💖", isLast: true }
         ];
 
         const book = document.getElementById('book');
@@ -283,83 +250,50 @@
         const nextBtn = document.getElementById('nextBtn');
         const prevBtn = document.getElementById('prevBtn');
         let currentPage = 0;
-        const totalPages = pagesData.length;
 
-        let audioInitialized = false;
-        function initAudio() {
-            if (!audioInitialized) {
-                pageFlipSound.play().then(() => {
-                    pageFlipSound.pause();
-                    pageFlipSound.currentTime = 0;
-                }).catch(() => {});
-                audioInitialized = true;
-            }
+        function handleImageError(img) {
+            img.closest('.illustration-container').classList.add('show-fallback');
         }
 
-        function playFlipSound() {
-            initAudio();
-            pageFlipSound.currentTime = 0;
-            pageFlipSound.play().catch(e => {});
-        }
-
-        // Generate Dots
-        for (let i = 0; i < totalPages; i++) {
-            const dot = document.createElement('div');
-            dot.className = `dot ${i === 0 ? 'active' : ''}`;
-            dotCounter.appendChild(dot);
-        }
-
-        // Generate Pages
         pagesData.forEach((data, index) => {
+            const dot = document.createElement('div');
+            dot.className = `dot ${index === 0 ? 'active' : ''}`;
+            dotCounter.appendChild(dot);
+
             const pageDiv = document.createElement('div');
             pageDiv.className = `page ${data.isCover ? 'cover' : ''}`;
-            pageDiv.style.zIndex = totalPages - index;
-            if(!data.isCover) pageDiv.style.backgroundColor = data.bgColor;
+            pageDiv.style.zIndex = pagesData.length - index;
             
-            let contentHtml = `
+            const content = `
                 <div class="page-content">
-                    <div class="illustration-container">${data.icon}</div>
+                    <div class="illustration-container ${!data.image ? 'show-fallback' : ''}">
+                        ${data.image ? `<img src="${data.image}" onerror="handleImageError(this)">` : ''}
+                        <span class="fallback-icon">${data.icon || '📖'}</span>
+                    </div>
                     <div class="text-content">${data.text}</div>
                     ${data.isLast ? '<button class="restart-btn" id="restartBtn">🔄 התחל מחדש</button>' : ''}
                 </div>
             `;
-            
-            pageDiv.innerHTML = contentHtml;
-            
-            pageDiv.onclick = (e) => {
-                if (e.target.id === 'restartBtn') return;
-                if (index === currentPage) goNext();
-                else if (index === currentPage - 1) goPrev();
-            };
-
+            pageDiv.innerHTML = content;
+            pageDiv.onclick = () => { if(index === currentPage) goNext(); };
             book.appendChild(pageDiv);
         });
 
         const pageElements = document.querySelectorAll('.page');
         const dots = document.querySelectorAll('.dot');
-        const restartBtn = document.getElementById('restartBtn');
 
         function updateUI() {
-            dots.forEach((dot, i) => {
-                dot.className = `dot ${i === currentPage ? 'active' : ''}`;
-            });
-            
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === currentPage));
             prevBtn.classList.toggle('disabled', currentPage === 0);
-            nextBtn.classList.toggle('disabled', currentPage === totalPages - 1);
-
-            // Logic to show/hide restart button ONLY on last page
-            if (currentPage === totalPages - 1) {
-                setTimeout(() => {
-                   if (restartBtn) restartBtn.classList.add('show');
-                }, 800); // Wait for page flip to almost finish
-            } else {
-                if (restartBtn) restartBtn.classList.remove('show');
-            }
+            nextBtn.classList.toggle('disabled', currentPage === pagesData.length - 1);
+            const restartBtn = document.getElementById('restartBtn');
+            if(restartBtn) restartBtn.classList.toggle('show', currentPage === pagesData.length - 1);
         }
 
         function goNext() {
-            if (currentPage < totalPages - 1) {
-                playFlipSound();
+            if (currentPage < pagesData.length - 1) {
+                pageFlipSound.currentTime = 0;
+                pageFlipSound.play().catch(() => {});
                 pageElements[currentPage].classList.add('flipped');
                 currentPage++;
                 updateUI();
@@ -368,48 +302,21 @@
 
         function goPrev() {
             if (currentPage > 0) {
-                playFlipSound();
                 currentPage--;
                 pageElements[currentPage].classList.remove('flipped');
                 updateUI();
             }
         }
 
-        function restartBook() {
-            playFlipSound();
-            // Hide button immediately when restarting
-            if (restartBtn) restartBtn.classList.remove('show');
-            
-            const flippedPages = Array.from(pageElements).filter(p => p.classList.contains('flipped')).reverse();
-            flippedPages.forEach((page, i) => {
-                setTimeout(() => {
-                    page.classList.remove('flipped');
-                }, i * 80);
-            });
-            currentPage = 0;
-            updateUI();
-        }
-
         nextBtn.onclick = goNext;
         prevBtn.onclick = goPrev;
-        
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'restartBtn') restartBook();
+        document.addEventListener('click', e => {
+            if(e.target.id === 'restartBtn') {
+                pageElements.forEach(p => p.classList.remove('flipped'));
+                currentPage = 0;
+                updateUI();
+            }
         });
-
-        let touchStartX = 0;
-        document.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-            initAudio();
-        }, {passive: true});
-
-        document.addEventListener('touchend', e => {
-            let touchEndX = e.changedTouches[0].screenX;
-            if (touchStartX - touchEndX > 50) goNext(); 
-            if (touchEndX - touchStartX > 50) goPrev(); 
-        }, {passive: true});
-
-        updateUI();
     </script>
 </body>
 </html>
