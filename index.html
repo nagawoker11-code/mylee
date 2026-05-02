@@ -2,49 +2,38 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>מאי-לי יושבת בסיר</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&family=Varela+Round&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&family=Varela+Round&display=swap');
-        
         :root {
-            --deep-purple-blue: #1e1b4b; 
-            --gradient-start: #312e81; 
-            --gradient-end: #1e1b4b;
-            --led-purple: #8b5cf6;
-        }
-
-        /* ביטול אפשרות גלילה ומניעת מתיחה */
-        html, body {
-            overflow: hidden;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            position: fixed; 
-            width: 100%;
-            -webkit-overflow-scrolling: touch;
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
         body {
             font-family: 'Varela Round', 'Assistant', sans-serif;
-            background-color: #ffffff;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            overflow: hidden;
+            touch-action: none;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom) 10px;
-            touch-action: none;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
         }
 
         .book-container {
             perspective: 2000px;
-            width: 95vw;
-            max-width: 450px;
-            height: 75vh; 
-            max-height: 650px;
+            width: 85vw;
+            height: 70vh;
+            max-width: 400px;
+            max-height: 600px;
             position: relative;
-            z-index: 10;
+            margin: auto;
         }
 
         .book {
@@ -55,392 +44,261 @@
         }
 
         .page {
+            position: absolute;
             width: 100%;
             height: 100%;
-            position: absolute;
             top: 0;
             right: 0;
-            transform-origin: right center;
-            transform-style: preserve-3d;
-            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-            cursor: pointer;
-            user-select: none;
             background: white;
-            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-            border-radius: 12px 4px 4px 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            text-align: center;
+            padding: 1.5rem;
             backface-visibility: hidden;
-            border: 1px solid #f1f5f9;
+            transform-origin: right center;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0.8s;
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
         }
 
         .page.flipped {
             transform: rotateY(180deg);
+            z-index: 0 !important;
         }
 
-        .page-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; 
-            gap: 12px; 
-            width: 100%;
-            height: 100%;
+        .page:not(.flipped) {
+            z-index: 10;
         }
 
-        .text-content {
-            font-size: clamp(1.15rem, 4.2vw, 1.6rem); 
-            line-height: 1.4;
-            color: #1e293b;
-            font-weight: 700;
-            max-width: 90%;
-        }
-
-        .illustration-container {
-            width: clamp(160px, 50vw, 280px);
-            height: clamp(160px, 50vw, 280px);
-            background-color: #ffffff;
-            border-radius: 20px; 
+        .text-container {
+            flex-shrink: 0;
+            min-height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 4px solid white;
-            overflow: hidden; 
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .image-frame {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #ffffff;
+            border: 6px solid #fff;
+            border-radius: 40px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.08);
+            width: 100%;
             position: relative;
         }
 
-        .illustration-container img {
+        .page-image {
             width: 100%;
             height: 100%;
-            object-fit: cover; 
-            display: block;
-        }
-
-        .fallback-icon {
-            font-size: clamp(3.5rem, 12vw, 6rem);
-            display: none;
-        }
-
-        .show-fallback .fallback-icon {
-            display: block;
-        }
-        .show-fallback img {
-            display: none;
-        }
-
-        /* דף הכריכה */
-        .cover {
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            border: none;
-            z-index: 100;
-        }
-
-        .cover .text-content {
-            color: white;
-            font-size: clamp(1.8rem, 7vw, 2.4rem);
-            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            margin-top: 20px;
-        }
-
-        .controls {
-            width: 100%;
-            max-width: 450px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 10px;
-            z-index: 1000;
-        }
-
-        .nav-btn {
-            background: #f8fafc;
-            padding: 10px 18px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            border: 1px solid #e2e8f0;
-            transition: all 0.2s ease;
-            color: #475569;
-            font-weight: 700;
-            font-size: 0.95rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .nav-btn:not(.disabled):hover {
-            background: white;
-            border-color: var(--led-purple);
-            color: var(--led-purple);
-        }
-
-        .nav-btn.disabled {
-            opacity: 0.3;
+            object-fit: contain;
             pointer-events: none;
         }
 
-        .page-counter {
+        .controls {
             display: flex;
             align-items: center;
-            background: #f1f5f9;
-            padding: 8px 14px;
-            border-radius: 24px;
-            border: 1px solid #e2e8f0;
+            gap: 2.5rem;
+            padding: 1.5rem 0;
+            z-index: 100;
         }
 
-        .dot {
-            width: 6px;
-            height: 6px;
-            background: #cbd5e1;
-            margin: 0 3.5px;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .dot.active {
-            background: var(--led-purple);
-            width: 14px;
-            border-radius: 5px;
-        }
-
-        .restart-btn {
-            background: var(--led-purple);
+        .nav-btn {
+            width: 68px;
+            height: 68px;
+            background: #6366f1;
             color: white;
-            padding: 10px 20px;
-            border-radius: 9999px;
-            font-weight: bold;
-            font-size: 1rem;
-            border: 2px solid white;
-            opacity: 0;
-            visibility: hidden;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            border: none;
+            outline: none;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Arrows direction fix */
+        .prev-btn svg { transform: scaleX(-1); } /* Mirror arrow for previous in RTL */
+        .next-btn svg { transform: scaleX(-1); } /* Mirror arrow for next in RTL */
+
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #d1d5db;
+            margin: 0 3px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
-            margin-top: 15px;
         }
 
-        .restart-btn.show {
-            opacity: 1;
-            visibility: visible;
+        .progress-dot.active {
+            background: #6366f1;
+            transform: scale(1.4);
         }
 
-        .speaking .nav-btn, .speaking .page {
-            cursor: wait !important;
-        }
-
-        @media (max-width: 320px) {
-            .book-container { height: 65vh; }
-            .illustration-container { width: 150px; height: 150px; }
-            .text-content { font-size: 1rem; }
-            .nav-btn { padding: 8px 12px; font-size: 0.85rem; }
+        @media (max-height: 650px) {
+            .book-container { height: 60vh; }
+            .text-container h2 { font-size: 1.15rem; }
         }
     </style>
 </head>
 <body>
 
-    <audio id="pageFlipSound" preload="auto"></audio>
-    <audio id="customAudioPlayer" preload="auto"></audio>
+    <div id="progressContainer" class="flex mb-4"></div>
 
     <div class="book-container">
-        <div class="book" id="book"></div>
+        <div id="book" class="book"></div>
     </div>
 
     <div class="controls">
-        <button class="nav-btn" id="prevBtn">
-            <span class="icon">👉</span>
-            <span>אחורה</span>
+        <!-- Prev Button (Left side) -->
+        <button id="prevBtn" class="nav-btn prev-btn opacity-30 pointer-events-none" aria-label="הקודם">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
+            </svg>
         </button>
 
-        <div class="page-counter" id="dotCounter"></div>
-
-        <button class="nav-btn" id="nextBtn">
-            <span>קדימה</span>
-            <span class="icon">👈</span>
+        <!-- Next Button (Right side) -->
+        <button id="nextBtn" class="nav-btn next-btn" aria-label="הבא">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+            </svg>
         </button>
     </div>
 
-    <script>
-        const coverImg = "https://github.com/user-attachments/assets/c8e79c2e-2d28-4301-9dfd-643bf8c9730a";
-        const flipSoundUrl = "https://www.soundjay.com/misc/sounds/page-flip-01a.mp3";
+    <audio id="audioPlayer" preload="auto"></audio>
 
-        // רשימת דפים מעודכנת עם כל קובצי האודיו
-        const pagesData = [
-            { text: "מאי-לי יושבת בסיר", image: coverImg, isCover: true },
-            { text: "קוראים לי מאי-לי ואני ילדה גדולה שעושה דברים של ילדים גדולים", icon: "👧", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-A.mp3" },
-            { text: "אוכלת לבד", icon: "🥣", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-B.mp3" },
-            { text: "מרכיבה פאזל", icon: "🧩", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-C.mp3" },
-            { text: "ולומדת לעשות פיפי וקקי בסיר כמו ילדה גדולה!", icon: "✨", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-D.mp3" },
-            { text: "עכשיו אני אומרת ביי ביי לחיתול ולובשת תחתונים", icon: "🩲", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-E.mp3" },
-            { text: "כשלוחץ לי בבטן ואני מרגישה שאני צריכה לעשות פיפי או קקי אני יושבת בסיר", icon: "💡", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-F.mp3" },
-            { text: "אני יושבת בסיר ומחכה, לפעמים אני קוראת ספר", icon: "📚", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-G.mp3" },
-            { text: "לפעמים יוצא פיפי או קקי בסיר ולפעמים אין פיפי ואין קקי", icon: "⭐", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-H.mp3" },
-            { text: "אני שוטפת ידיים עם מים וסבון וחוזרת לשחק", icon: "🧼", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-I.mp3" },
-            { text: "כיף להיות ילדה גדולה", icon: "💖", isLast: true, audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-J.mp3" }
+    <script>
+        const audioBase = "https://raw.githubusercontent.com/nagawoker11-code/mylee/main/";
+        
+        const bookData = [
+            { text: "מאי-לי יושבת בסיר", image: "https://github.com/user-attachments/assets/c8e79c2e-2d28-4301-9dfd-643bf8c9730a", audio: null },
+            { text: "קוראים לי מאי-לי ואני ילדה גדולה שעושה דברים של ילדים גדולים", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-2.jpeg?raw=true", audio: "ML-A.mp3" },
+            { text: "אוכלת לבד", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-3.jpeg?raw=true", audio: "ML-B.mp3" },
+            { text: "מרכיבה פאזל", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-4.jpeg?raw=true", audio: "ML-C.mp3" },
+            { text: "ולומדת לעשות פיפי וקקי בסיר כמו ילדה גדולה!", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-5.jpeg?raw=true", audio: "ML-D.mp3" },
+            { text: "עכשיו אני אומרת ביי ביי לחיתול ולובשת תחתונים", image: "https://github.com/nagawoker11-code/mylee/blob/main/WhatsApp%20Image%202026-04-19%20at%2012.20.00%20(2).jpeg?raw=true", audio: "ML-E.mp3" },
+            { text: "כשלוחץ לי בבטן ואני מרגישה שאני צריכה לעשות פיפי או קקי אני יושבת בסיר", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-5.jpeg?raw=true", audio: "ML-F.mp3" },
+            { text: "אני יושבת בסיר ומחכה, לפעמים אני קוראת ספר", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-1.jpeg?raw=true", audio: "ML-G.mp3" },
+            { text: "לפעמים יוצא פיפי או קקי בסיר ולפעמים אין פיפי ואין קקי", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-5.jpeg?raw=true", audio: "ML-H.mp3" },
+            { text: "אני שוטפת ידיים עם מים וסבון וחוזרת לשחק", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-6.jpeg?raw=true", audio: "ML-I.mp3" },
+            { text: "כיף להיות ילדה גדולה", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-2.jpeg?raw=true", audio: "ML-J.mp3", isLast: true }
         ];
 
-        const book = document.getElementById('book');
-        const dotCounter = document.getElementById('dotCounter');
-        const pageFlipSound = document.getElementById('pageFlipSound');
-        const customAudioPlayer = document.getElementById('customAudioPlayer');
+        let currentPage = 0;
+        const bookEl = document.getElementById('book');
+        const progressEl = document.getElementById('progressContainer');
+        const audioPlayer = document.getElementById('audioPlayer');
         const nextBtn = document.getElementById('nextBtn');
         const prevBtn = document.getElementById('prevBtn');
-        
-        let currentPage = 0;
-        let isSpeaking = false;
-        let speakTimeout = null;
 
-        pageFlipSound.src = flipSoundUrl;
+        function initBook() {
+            bookEl.innerHTML = '';
+            progressEl.innerHTML = '';
 
-        function stopAllAudio() {
-            window.speechSynthesis.cancel();
-            customAudioPlayer.pause();
-            customAudioPlayer.currentTime = 0;
-            if(speakTimeout) clearTimeout(speakTimeout);
-            isSpeaking = false;
-            document.body.classList.remove('speaking');
-        }
-
-        function playPageContent(pageIndex) {
-            stopAllAudio();
-            const data = pagesData[pageIndex];
-            if (!data || data.isCover) return;
-
-            isSpeaking = true;
-            document.body.classList.add('speaking');
-            updateUI();
-
-            // השהיה של 800ms כדי לתת לאפקט המעבר להסתיים
-            speakTimeout = setTimeout(() => {
-                if (data.audio) {
-                    customAudioPlayer.src = data.audio;
-                    customAudioPlayer.play().catch(err => {
-                        console.error("Audio play failed:", err);
-                        useTTS(data.text);
-                    });
-                    
-                    customAudioPlayer.onended = () => {
-                        isSpeaking = false;
-                        document.body.classList.remove('speaking');
-                        updateUI();
-                    };
-                } else {
-                    useTTS(data.text);
-                }
-            }, 800);
-        }
-
-        function useTTS(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'he-IL';
-            utterance.rate = 0.9;
-            utterance.onstart = () => { isSpeaking = true; document.body.classList.add('speaking'); updateUI(); };
-            utterance.onend = () => { isSpeaking = false; document.body.classList.remove('speaking'); updateUI(); };
-            utterance.onerror = () => { isSpeaking = false; document.body.classList.remove('speaking'); updateUI(); };
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function handleImageError(img) {
-            img.closest('.illustration-container').classList.add('show-fallback');
-        }
-
-        pagesData.forEach((data, index) => {
-            const dot = document.createElement('div');
-            dot.className = `dot ${index === 0 ? 'active' : ''}`;
-            dotCounter.appendChild(dot);
-
-            const pageDiv = document.createElement('div');
-            pageDiv.className = `page ${data.isCover ? 'cover' : ''}`;
-            pageDiv.style.zIndex = pagesData.length - index;
-            
-            const content = `
-                <div class="page-content">
-                    <div class="illustration-container ${!data.image ? 'show-fallback' : ''}">
-                        ${data.image ? `<img src="${data.image}" onerror="handleImageError(this)">` : ''}
-                        <span class="fallback-icon">${data.icon || '📖'}</span>
+            bookData.forEach((data, index) => {
+                const page = document.createElement('div');
+                page.className = `page page-${index}`;
+                page.style.zIndex = bookData.length - index;
+                
+                let content = `
+                    <div class="text-container">
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 leading-snug">${data.text}</h2>
                     </div>
-                    <div class="text-content">${data.text}</div>
-                    ${data.isLast ? '<button class="restart-btn" id="restartBtn">🔄 התחל מחדש</button>' : ''}
-                </div>
-            `;
-            pageDiv.innerHTML = content;
-            
-            pageDiv.onclick = () => { 
-                if(index === currentPage && !isSpeaking) goNext(); 
-            };
-            book.appendChild(pageDiv);
-        });
+                    <div class="image-frame">
+                        <img src="${data.image}" alt="${data.text}" class="page-image">
+                    </div>
+                `;
 
-        const pageElements = document.querySelectorAll('.page');
-        const dots = document.querySelectorAll('.dot');
+                if (data.isLast) {
+                    content += `
+                        <button onclick="restartBook()" class="mt-4 py-3 px-8 bg-indigo-600 text-white rounded-full font-bold shadow-lg active:scale-95 transition-all text-lg">
+                            להתחיל מחדש
+                        </button>
+                    `;
+                }
 
-        function updateUI() {
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentPage);
+                page.innerHTML = content;
+                bookEl.appendChild(page);
+
+                const dot = document.createElement('div');
+                dot.className = `progress-dot ${index === 0 ? 'active' : ''}`;
+                progressEl.appendChild(dot);
             });
 
-            const shouldDisableNext = currentPage === pagesData.length - 1 || isSpeaking;
-            const shouldDisablePrev = currentPage === 0 || isSpeaking;
-
-            prevBtn.classList.toggle('disabled', shouldDisablePrev);
-            nextBtn.classList.toggle('disabled', shouldDisableNext);
-            
-            const restartBtn = document.getElementById('restartBtn');
-            if(restartBtn) restartBtn.classList.toggle('show', currentPage === pagesData.length - 1 && !isSpeaking);
+            updateNavigation();
         }
 
-        function goNext() {
-            if (currentPage < pagesData.length - 1 && !isSpeaking) {
-                pageFlipSound.currentTime = 0;
-                pageFlipSound.play().catch(() => {});
-                pageElements[currentPage].classList.add('flipped');
+        function flipPage(direction) {
+            if (direction === 'next' && currentPage < bookData.length - 1) {
+                const page = document.querySelector(`.page-${currentPage}`);
+                page.classList.add('flipped');
                 currentPage++;
-                playPageContent(currentPage);
-                updateUI();
-            }
-        }
-
-        function goPrev() {
-            if (currentPage > 0 && !isSpeaking) {
-                stopAllAudio();
+                playNarration();
+            } else if (direction === 'prev' && currentPage > 0) {
                 currentPage--;
-                pageElements[currentPage].classList.remove('flipped');
-                if (currentPage > 0) {
-                    playPageContent(currentPage);
-                }
-                updateUI();
+                const page = document.querySelector(`.page-${currentPage}`);
+                page.classList.remove('flipped');
+                playNarration();
+            }
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            prevBtn.classList.toggle('opacity-30', currentPage === 0);
+            prevBtn.classList.toggle('pointer-events-none', currentPage === 0);
+            nextBtn.classList.toggle('opacity-30', currentPage === bookData.length - 1);
+            nextBtn.classList.toggle('pointer-events-none', currentPage === bookData.length - 1);
+
+            document.querySelectorAll('.progress-dot').forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === currentPage);
+            });
+        }
+
+        function playNarration() {
+            const data = bookData[currentPage];
+            audioPlayer.pause();
+            if (data.audio) {
+                audioPlayer.src = audioBase + data.audio;
+                audioPlayer.play().catch(() => console.log("Audio waiting for user touch..."));
             }
         }
 
-        nextBtn.onclick = (e) => { e.stopPropagation(); goNext(); };
-        prevBtn.onclick = (e) => { e.stopPropagation(); goPrev(); };
-        
-        document.addEventListener('click', e => {
-            if(e.target.id === 'restartBtn' && !isSpeaking) {
-                stopAllAudio();
-                pageElements.forEach(p => p.classList.remove('flipped'));
-                currentPage = 0;
-                updateUI();
-            }
-        });
+        function restartBook() {
+            currentPage = 0;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('flipped'));
+            updateNavigation();
+            audioPlayer.pause();
+        }
 
-        let touchStartX = 0;
-        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, {passive: true});
+        nextBtn.addEventListener('click', (e) => { e.preventDefault(); flipPage('next'); });
+        prevBtn.addEventListener('click', (e) => { e.preventDefault(); flipPage('prev'); });
+
+        let startX = 0;
+        document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
         document.addEventListener('touchend', e => {
-            if (isSpeaking) return;
-            let touchEndX = e.changedTouches[0].screenX;
-            if (touchStartX - touchEndX > 50) goNext(); 
-            if (touchEndX - touchStartX > 50) goPrev(); 
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+            if (diff > 60) flipPage('next');
+            if (diff < -60) flipPage('prev');
         }, {passive: true});
 
-        document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+        document.body.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+
+        window.onload = initBook;
     </script>
 </body>
 </html>
