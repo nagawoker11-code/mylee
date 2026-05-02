@@ -60,11 +60,13 @@
             transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0.8s;
             overflow: hidden;
             border: 1px solid #f0f0f0;
+            cursor: pointer; /* Feedback that the page is clickable */
         }
 
         .page.flipped {
             transform: rotateY(180deg);
             z-index: 0 !important;
+            cursor: default; /* Once flipped, it shouldn't be clickable from the back */
         }
 
         .page:not(.flipped) {
@@ -131,9 +133,8 @@
             transform: scale(0.9);
         }
 
-        /* Arrows direction fix */
-        .prev-btn svg { transform: scaleX(-1); } /* Mirror arrow for previous in RTL */
-        .next-btn svg { transform: scaleX(-1); } /* Mirror arrow for next in RTL */
+        .prev-btn svg { transform: scaleX(-1); }
+        .next-btn svg { transform: scaleX(-1); }
 
         .progress-dot {
             width: 8px;
@@ -185,7 +186,7 @@
         const audioBase = "https://raw.githubusercontent.com/nagawoker11-code/mylee/main/";
         
         const bookData = [
-            { text: "מאי-לי יושבת בסיר", image: "https://github.com/user-attachments/assets/c8e79c2e-2d28-4301-9dfd-643bf8c9730a", audio: null },
+            { text: "מאי-לי יושבת בסיר", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-1.jpeg?raw=true", audio: null },
             { text: "קוראים לי מאי-לי ואני ילדה גדולה שעושה דברים של ילדים גדולים", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-2.jpeg?raw=true", audio: "ML-A.mp3" },
             { text: "אוכלת לבד", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-3.jpeg?raw=true", audio: "ML-B.mp3" },
             { text: "מרכיבה פאזל", image: "https://github.com/nagawoker11-code/mylee/blob/main/ML-4.jpeg?raw=true", audio: "ML-C.mp3" },
@@ -214,6 +215,14 @@
                 page.className = `page page-${index}`;
                 page.style.zIndex = bookData.length - index;
                 
+                // Add click listener to the page for forward navigation
+                page.addEventListener('click', (e) => {
+                    // Prevent navigation if clicking the restart button
+                    if (e.target.tagName !== 'BUTTON') {
+                        flipPage('next');
+                    }
+                });
+                
                 let content = `
                     <div class="text-container">
                         <h2 class="text-xl md:text-2xl font-bold text-gray-800 leading-snug">${data.text}</h2>
@@ -225,7 +234,7 @@
 
                 if (data.isLast) {
                     content += `
-                        <button onclick="restartBook()" class="mt-4 py-3 px-8 bg-indigo-600 text-white rounded-full font-bold shadow-lg active:scale-95 transition-all text-lg">
+                        <button onclick="event.stopPropagation(); restartBook()" class="mt-4 py-3 px-8 bg-indigo-600 text-white rounded-full font-bold shadow-lg active:scale-95 transition-all text-lg">
                             להתחיל מחדש
                         </button>
                     `;
@@ -284,8 +293,8 @@
             audioPlayer.pause();
         }
 
-        nextBtn.addEventListener('click', (e) => { e.preventDefault(); flipPage('next'); });
-        prevBtn.addEventListener('click', (e) => { e.preventDefault(); flipPage('prev'); });
+        nextBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); flipPage('next'); });
+        prevBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); flipPage('prev'); });
 
         let startX = 0;
         document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
