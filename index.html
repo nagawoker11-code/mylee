@@ -101,10 +101,6 @@
             max-width: 90%;
         }
 
-        .highlight {
-            color: var(--led-purple);
-        }
-
         .illustration-container {
             width: clamp(160px, 50vw, 280px);
             height: clamp(160px, 50vw, 280px);
@@ -138,7 +134,7 @@
             display: none;
         }
 
-        /* דף הכריכה - כחול סגול כהה */
+        /* דף הכריכה */
         .cover {
             background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
             border: none;
@@ -236,28 +232,22 @@
             visibility: visible;
         }
 
-        /* התאמות מיוחדות למכשירים מתקפלים (Fold) */
-        @media (max-width: 320px) { /* פולד סגור או מסך קטן מאוד */
+        .speaking .nav-btn, .speaking .page {
+            cursor: wait !important;
+        }
+
+        @media (max-width: 320px) {
             .book-container { height: 65vh; }
             .illustration-container { width: 150px; height: 150px; }
             .text-content { font-size: 1rem; }
             .nav-btn { padding: 8px 12px; font-size: 0.85rem; }
-        }
-
-        @media (min-width: 600px) and (max-height: 900px) { /* פולד פתוח / טאבלט קטן */
-            .book-container { max-width: 550px; height: 60vh; }
-            .illustration-container { width: 300px; height: 300px; }
-        }
-
-        /* מצב "הקראה פעילה" - מנע לחיצות על כפתורים */
-        .speaking .nav-btn, .speaking .page {
-            cursor: wait !important;
         }
     </style>
 </head>
 <body>
 
     <audio id="pageFlipSound" preload="auto"></audio>
+    <audio id="customAudioPlayer" preload="auto"></audio>
 
     <div class="book-container">
         <div class="book" id="book"></div>
@@ -281,64 +271,80 @@
         const coverImg = "https://github.com/user-attachments/assets/c8e79c2e-2d28-4301-9dfd-643bf8c9730a";
         const flipSoundUrl = "https://www.soundjay.com/misc/sounds/page-flip-01a.mp3";
 
-        // רשימת דפים מדויקת לפי הבקשה
+        // רשימת דפים מעודכנת עם כל קובצי האודיו
         const pagesData = [
             { text: "מאי-לי יושבת בסיר", image: coverImg, isCover: true },
-            { text: "קוראים לי מאי-לי ואני ילדה גדולה שעושה דברים של ילדים גדולים", icon: "👧" },
-            { text: "אוכלת לבד", icon: "🥣" },
-            { text: "מרכיבה פאזל", icon: "🧩" },
-            { text: "ולומדת לעשות פיפי וקקי בסיר כמו ילדה גדולה!", icon: "✨" },
-            { text: "עכשיו אני אומרת ביי ביי לחיתול ולובשת תחתונים", icon: "🩲" },
-            { text: "כשלוחץ לי בבטן ואני מרגישה שאני צריכה לעשות פיפי או קקי אני יושבת בסיר", icon: "💡" },
-            { text: "אני יושבת בסיר ומחכה, לפעמים אני קוראת ספר", icon: "📚" },
-            { text: "לפעמים יוצא פיפי או קקי בסיר ולפעמים אין פיפי ואין קקי", icon: "⭐" },
-            { text: "אני שוטפת ידיים עם מים וסבון וחוזרת לשחק", icon: "🧼" },
-            { text: "כיף להיות ילדה גדולה", icon: "💖", isLast: true }
+            { text: "קוראים לי מאי-לי ואני ילדה גדולה שעושה דברים של ילדים גדולים", icon: "👧", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-A.mp3" },
+            { text: "אוכלת לבד", icon: "🥣", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-B.mp3" },
+            { text: "מרכיבה פאזל", icon: "🧩", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-C.mp3" },
+            { text: "ולומדת לעשות פיפי וקקי בסיר כמו ילדה גדולה!", icon: "✨", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-D.mp3" },
+            { text: "עכשיו אני אומרת ביי ביי לחיתול ולובשת תחתונים", icon: "🩲", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-E.mp3" },
+            { text: "כשלוחץ לי בבטן ואני מרגישה שאני צריכה לעשות פיפי או קקי אני יושבת בסיר", icon: "💡", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-F.mp3" },
+            { text: "אני יושבת בסיר ומחכה, לפעמים אני קוראת ספר", icon: "📚", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-G.mp3" },
+            { text: "לפעמים יוצא פיפי או קקי בסיר ולפעמים אין פיפי ואין קקי", icon: "⭐", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-H.mp3" },
+            { text: "אני שוטפת ידיים עם מים וסבון וחוזרת לשחק", icon: "🧼", audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-I.mp3" },
+            { text: "כיף להיות ילדה גדולה", icon: "💖", isLast: true, audio: "https://github.com/nagawoker11-code/mylee/raw/refs/heads/main/ML-J.mp3" }
         ];
 
         const book = document.getElementById('book');
         const dotCounter = document.getElementById('dotCounter');
         const pageFlipSound = document.getElementById('pageFlipSound');
+        const customAudioPlayer = document.getElementById('customAudioPlayer');
         const nextBtn = document.getElementById('nextBtn');
         const prevBtn = document.getElementById('prevBtn');
+        
         let currentPage = 0;
         let isSpeaking = false;
         let speakTimeout = null;
 
         pageFlipSound.src = flipSoundUrl;
 
-        // פונקציית הקראה (Speech Synthesis)
-        function speakText(text) {
-            // ביטול הקראות קודמות וטיימאאוטים קודמים
+        function stopAllAudio() {
             window.speechSynthesis.cancel();
+            customAudioPlayer.pause();
+            customAudioPlayer.currentTime = 0;
             if(speakTimeout) clearTimeout(speakTimeout);
-            
-            // הוספת השהיה של 800 מילי-שניות (כמעט שנייה) לפני התחלת ההקראה
+            isSpeaking = false;
+            document.body.classList.remove('speaking');
+        }
+
+        function playPageContent(pageIndex) {
+            stopAllAudio();
+            const data = pagesData[pageIndex];
+            if (!data || data.isCover) return;
+
+            isSpeaking = true;
+            document.body.classList.add('speaking');
+            updateUI();
+
+            // השהיה של 800ms כדי לתת לאפקט המעבר להסתיים
             speakTimeout = setTimeout(() => {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'he-IL'; // עברית
-                utterance.rate = 0.9;     // קצב מעט איטי יותר לילדים
-
-                utterance.onstart = () => {
-                    isSpeaking = true;
-                    document.body.classList.add('speaking');
-                    updateUI();
-                };
-
-                utterance.onend = () => {
-                    isSpeaking = false;
-                    document.body.classList.remove('speaking');
-                    updateUI();
-                };
-
-                utterance.onerror = () => {
-                    isSpeaking = false;
-                    document.body.classList.remove('speaking');
-                    updateUI();
-                };
-
-                window.speechSynthesis.speak(utterance);
+                if (data.audio) {
+                    customAudioPlayer.src = data.audio;
+                    customAudioPlayer.play().catch(err => {
+                        console.error("Audio play failed:", err);
+                        useTTS(data.text);
+                    });
+                    
+                    customAudioPlayer.onended = () => {
+                        isSpeaking = false;
+                        document.body.classList.remove('speaking');
+                        updateUI();
+                    };
+                } else {
+                    useTTS(data.text);
+                }
             }, 800);
+        }
+
+        function useTTS(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'he-IL';
+            utterance.rate = 0.9;
+            utterance.onstart = () => { isSpeaking = true; document.body.classList.add('speaking'); updateUI(); };
+            utterance.onend = () => { isSpeaking = false; document.body.classList.remove('speaking'); updateUI(); };
+            utterance.onerror = () => { isSpeaking = false; document.body.classList.remove('speaking'); updateUI(); };
+            window.speechSynthesis.speak(utterance);
         }
 
         function handleImageError(img) {
@@ -380,7 +386,6 @@
                 dot.classList.toggle('active', i === currentPage);
             });
 
-            // חסימת כפתורים בזמן הקראה
             const shouldDisableNext = currentPage === pagesData.length - 1 || isSpeaking;
             const shouldDisablePrev = currentPage === 0 || isSpeaking;
 
@@ -396,39 +401,21 @@
                 pageFlipSound.currentTime = 0;
                 pageFlipSound.play().catch(() => {});
                 pageElements[currentPage].classList.add('flipped');
-                
-                // סימון מצב "דיבור" כבר עכשיו כדי לחסום לחיצות נוספות בזמן ההשהיה
-                isSpeaking = true;
-                updateUI();
-                
                 currentPage++;
-                
-                // התחלת הקראה רק אם זה לא דף הכריכה
-                if (currentPage > 0) {
-                    speakText(pagesData[currentPage].text);
-                } else {
-                    isSpeaking = false;
-                    updateUI();
-                }
+                playPageContent(currentPage);
+                updateUI();
             }
         }
 
         function goPrev() {
             if (currentPage > 0 && !isSpeaking) {
-                window.speechSynthesis.cancel();
-                if(speakTimeout) clearTimeout(speakTimeout);
-                isSpeaking = false;
-                
+                stopAllAudio();
                 currentPage--;
                 pageElements[currentPage].classList.remove('flipped');
-                
                 if (currentPage > 0) {
-                    isSpeaking = true;
-                    updateUI();
-                    speakText(pagesData[currentPage].text);
-                } else {
-                    updateUI();
+                    playPageContent(currentPage);
                 }
+                updateUI();
             }
         }
 
@@ -437,16 +424,13 @@
         
         document.addEventListener('click', e => {
             if(e.target.id === 'restartBtn' && !isSpeaking) {
-                window.speechSynthesis.cancel();
-                if(speakTimeout) clearTimeout(speakTimeout);
+                stopAllAudio();
                 pageElements.forEach(p => p.classList.remove('flipped'));
                 currentPage = 0;
-                isSpeaking = false;
                 updateUI();
             }
         });
 
-        // ניווט במחוות מגע (Swipe) - חסום בזמן הקראה
         let touchStartX = 0;
         document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, {passive: true});
         document.addEventListener('touchend', e => {
@@ -456,10 +440,7 @@
             if (touchEndX - touchStartX > 50) goPrev(); 
         }, {passive: true});
 
-        // מניעת גלילה בנגיעה
-        document.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-        }, { passive: false });
+        document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
     </script>
 </body>
 </html>
